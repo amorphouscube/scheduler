@@ -1,0 +1,28 @@
+import React, { useReducer, useEffect } from "react";
+
+const SET_DAY = "SET_DAY";
+const SET_APPLICATION_DATA = "SET_APPLICATION_DATA";
+const SET_INTERVIEW = "SET_INTERVIEW";
+
+export default function reducer(state, action) {
+  switch (action.type) {
+    case SET_DAY:
+      return {
+        ...state , day: action.value
+      }
+    case SET_APPLICATION_DATA:
+      return {
+        ...state , day: action.day , days: action.days , appointments: action.appointments , interviewers: action.interviewers
+      }
+    case SET_INTERVIEW:
+      return {
+        ...state , appointments: action.value, days: action.value2
+      }
+  default:
+    throw new Error (
+      `tried to reduce with unsupported action type: ${action.type}`
+    )
+  }
+}
+
+export {SET_DAY, SET_APPLICATION_DATA, SET_INTERVIEW};

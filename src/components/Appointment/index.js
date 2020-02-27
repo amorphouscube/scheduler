@@ -13,6 +13,7 @@ const ERROR = "ERROR";
 const EMPTY = "EMPTY";
 const SHOW = "SHOW";
 const CREATE = "CREATE";
+const EDIT = "EDIT";
 const SAVING = "SAVING";
 const CONFIRM = "CONFIRM";
 
@@ -27,29 +28,31 @@ export default function Appointment(props){
       interviewer
     };
     transition(SAVING);
-    props.bookInterview(props.id, interview, () => {transition(SHOW)});
+    props.bookInterview(props.id, interview, () => {transition(SHOW)}, () => {transition(ERROR, true)});
   }
 
   function deleteInterview() {
-    props.cancelInterview(props.id);
-    console.log("teansitionEmpty")
+    transition(SAVING);
+    props.cancelInterview(props.id, () => {transition(ERROR, true)});
     transition(EMPTY);
   }
-  
+
   return (
-    <article className="appointment">
+    <article className="appointment" data-testid="appointment">
       <Header time={props.time}/>
       
+      {mode === SAVING && <Status message={"Saving"}/>}
+      {mode === ERROR && <Error message={"An error has occured"} onClose={transition(EMPTY)}/>}
       {mode === CONFIRM && <Confirm message={"Are you sure you would like to delete?"} onCancel={() => {transition(SHOW)}} onConfirm={deleteInterview} />}
       {mode === CREATE && <Form onSave={save} onCancel={() => {transition(EMPTY)}} interviewers={props.interviewers}/>}
+      {mode === EDIT && <Form onSave={save} onCancel={() => {transition(SHOW)}} interviewers={props.interviewers}/>}
       {mode === EMPTY && <Empty onAdd={() => {transition(CREATE)}} />}
-      {mode === SAVING && <Status message={"Saving"}/>}
       {mode === SHOW && (
         <Show
           student={props.interview.student}
           interviewer={props.interview.interviewer}
           onDelete={() => {transition(CONFIRM)}}
-          onEdit={save}
+          onEdit={() => {transition(EDIT)}}
         />
       )}
     </article>
