@@ -16,6 +16,7 @@ const CREATE = "CREATE";
 const EDIT = "EDIT";
 const SAVING = "SAVING";
 const CONFIRM = "CONFIRM";
+const DELETING = "DELETING";
 
 export default function Appointment(props){
   const { mode, transition, back } = useVisualMode(
@@ -32,9 +33,8 @@ export default function Appointment(props){
   }
 
   function deleteInterview() {
-    transition(SAVING);
-    props.cancelInterview(props.id, () => {transition(ERROR, true)});
-    transition(EMPTY);
+    transition(DELETING);
+    props.cancelInterview(props.id, () => {transition(ERROR, true)}, () => {transition(EMPTY)});
   }
 
   return (
@@ -42,7 +42,8 @@ export default function Appointment(props){
       <Header time={props.time}/>
       
       {mode === SAVING && <Status message={"Saving"}/>}
-      {mode === ERROR && <Error message={"An error has occured"} onClose={transition(EMPTY)}/>}
+      {mode === DELETING && <Status message={"Deleting"}/>}
+      {mode === ERROR && <Error message={"An error has occured"} onClose={() => back()}/>}
       {mode === CONFIRM && <Confirm message={"Are you sure you would like to delete?"} onCancel={() => {transition(SHOW)}} onConfirm={deleteInterview} />}
       {mode === CREATE && <Form onSave={save} onCancel={() => {transition(EMPTY)}} interviewers={props.interviewers}/>}
       {mode === EDIT && <Form onSave={save} onCancel={() => {transition(SHOW)}} interviewers={props.interviewers}/>}
@@ -58,3 +59,5 @@ export default function Appointment(props){
     </article>
   )
 }
+
+//      {mode === CREATE_ERROR && <Error message={"An error has occured"} onClose={transition(EMPTY)}/>}

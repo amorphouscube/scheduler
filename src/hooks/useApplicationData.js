@@ -58,10 +58,12 @@ export default function useApplicationData() {
     .then(() =>  { 
       callback()
     })
-    .catch(error => callback1())
+    .catch(error => {
+      callback1()
+    })
   } 
 
-  function cancelInterview(id, callback) {
+  function cancelInterview(id, callback, callback1) {
     Promise.all([
       axios.delete(`/api/appointments/${id}`),
       axios.get('/api/appointments'),
@@ -69,6 +71,9 @@ export default function useApplicationData() {
     ])
     .then((all) => {
       dispatch({type:SET_INTERVIEW, value:all[1].data, value2:all[2].data });
+    })
+    .then( () => {
+      callback1();
     })
     .catch(error => callback())
   }
